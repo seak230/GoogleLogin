@@ -4,9 +4,13 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -17,11 +21,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -66,8 +74,10 @@ fun Greeting() {
             .requestEmail()
             .build()
     val googleSignInClient = GoogleSignIn.getClient(context, gso)
-    Column {
-        Log.d("TAG", "Greeting: $user")
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         if (user == null) {
             Text("Not logged in")
             Button(onClick = {
@@ -76,36 +86,31 @@ fun Greeting() {
                 Text("Sign in via Google")
             }
         } else {
-            Text("Welcome")
-            Row {
-                AsyncImage(
-                    model = "${user!!.photoUrl}",
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                )
-                Text(text = " ${user!!.displayName}")
-            }
+            AsyncImage(
+                model = "${user!!.photoUrl}",
+                contentDescription = null,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(200.dp)
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Text(
+                text = " ${user!!.displayName}",
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
             Button(onClick = {
                 googleSignInClient.signOut().addOnCompleteListener {
-                    googleSignInClient.revokeAccess().addOnCompleteListener {
-                        // 계정 연결 해제 완료 후 필요한 UI 업데이트나 로직 수행
-                    }
+                    user = null
                 }
-                user = null
             }) {
                 Text("Sign out")
             }
         }
-    }
-
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LoginTestTheme {
-        Greeting()
     }
 }
