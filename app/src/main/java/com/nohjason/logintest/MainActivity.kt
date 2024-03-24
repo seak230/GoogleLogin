@@ -35,6 +35,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.nohjason.logintest.navigation.NavControll
+import com.nohjason.logintest.screen.Login
 import com.nohjason.logintest.ui.theme.LoginTestTheme
 
 class MainActivity : ComponentActivity() {
@@ -47,69 +49,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting()
+                    NavControll()
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun Greeting() {
-    val auth = Firebase.auth
-    var user by remember { mutableStateOf(auth.currentUser) }
-    val launcher = rememberFirebaseAuthLauncher(
-        onAuthComplete = { result ->
-            user = result.user
-        },
-        onAuthError = {
-            user = null
-        }
-    )
-    val token = stringResource(R.string.default_web_client_id)
-    val context = LocalContext.current
-    val gso =
-        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(token)
-            .requestEmail()
-            .build()
-    val googleSignInClient = GoogleSignIn.getClient(context, gso)
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        if (user == null) {
-            Text("Not logged in")
-            Button(onClick = {
-                launcher.launch(googleSignInClient.signInIntent)
-            }) {
-                Text("Sign in via Google")
-            }
-        } else {
-            AsyncImage(
-                model = "${user!!.photoUrl}",
-                contentDescription = null,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(200.dp)
-            )
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            Text(
-                text = " ${user!!.displayName}",
-                fontWeight = FontWeight.Bold,
-                fontSize = 30.sp
-            )
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            Button(onClick = {
-                googleSignInClient.signOut().addOnCompleteListener {
-                    user = null
-                }
-            }) {
-                Text("Sign out")
             }
         }
     }
